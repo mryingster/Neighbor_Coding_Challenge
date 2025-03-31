@@ -70,6 +70,7 @@ function pack (listings, cars_in) {
     let ids = [];
 
     for (let listing of listings) {
+        // No more cars - Done
         if (cars.length == 0)
             break;
 
@@ -77,13 +78,14 @@ function pack (listings, cars_in) {
         ids.push(listing.id);
         price += listing.price;
 
+        // Fill up each 10 foot wide lane with as many cars as we can
         for (let lane=0; lane<listing.width; lane+=10) {
             let length = listing.length;
             for (let car of cars) {
                 if (car < length) {
                     // Remove car
                     cars.splice(cars.indexOf(car), 1);
-                    // Shorten available space
+                    // Shorten available lane space
                     length -= car;
                 }
             }
@@ -94,23 +96,16 @@ function pack (listings, cars_in) {
     if (cars.length != 0)
         return -1
 
+    // Could fit!
     return {
         price: price,
         ids: ids
     };
 }
 
-function permute_and_pack(listings, request) {
+function permute_and_pack(listings, cars) {
     let best_price = -1;
     let best_ids = [];
-
-    // Create list of cars that is largest to smallest
-    let cars = []
-    for (let car of request)
-        for (let i=0; i<car.quantity; i++)
-            cars.push(car.length);
-
-    cars.sort().reverse();
 
     // Permute arrangements of listings to find best packing order
     for (let permuted_listings of permutator(listings)) {
@@ -132,8 +127,8 @@ function permute_and_pack(listings, request) {
     };
 }
 
-function find_best_pack(location_id, listings, request) {
-    let best_pack = permute_and_pack(listings, request);
+function find_best_pack(location_id, listings, cars) {
+    let best_pack = permute_and_pack(listings, cars);
 
     if (best_pack == null)
         return null;
@@ -151,12 +146,20 @@ function sort_by_price(a) {
     });
 }
 
-function find_match(d){
+function find_match(request){
     let results = [];
+
+    // Create list of cars that is largest to smallest based on our input requests
+    let cars = []
+    for (let car of request)
+        for (let i=0; i<car.quantity; i++)
+            cars.push(car.length);
+
+    cars.sort().reverse();
 
     // Find all locations with enough appropriately-sized spots
     for (let lid in locations) {
-        let result = find_best_pack(lid, locations[lid], d);
+        let result = find_best_pack(lid, locations[lid], cars);
 
         if (result != null)
             results.push(result);
@@ -165,25 +168,5 @@ function find_match(d){
     // Sort results based on price
     return sort_by_price(results);
 }
-
-// Debug
-let t = find_match([
-    {
-        length : 10,
-        quantity : 1
-    },
-    {
-        length : 20,
-        quantity : 2
-    },
-    {
-        length : 25,
-        quantity : 1
-    },
-]);
-
-for (i of t)
-    console.log(t);
-return;
 
 serve();
