@@ -22,7 +22,7 @@ We'd like you to write a search algorithm that will allow renters to find locati
                 }
             ]'
     ```
-    Each item in the request array represents vehicles that needs to be stored. The `length` is the length of the vehicle in feet. You can assume that the `width` of each vehicle is 10 feet. The `quantity` is how many vehicles of those dimensions need to be stored. 
+    Each item in the request array represents vehicles that need to be stored. The `length` is the length of the vehicle in feet. You can assume that the `width` of each vehicle is 10 feet. The `quantity` is how many vehicles of those dimensions need to be stored. 
 
     The sum of all `quantity` values will always be less than or equal to 5.
 
